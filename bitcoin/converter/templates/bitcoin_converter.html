@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Converter</title>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: skyblue;
+            color: black;
+            background: linear-gradient(to right, #64b5f6, #1976d2);
+        }
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .background-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f3f5;
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px #ccd5db, 
+                        -8px -8px 16px #ffffff;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            
+            border: 1px solid rgba(255, 255, 255, 0.2);           
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top right, #64b5f6, #1976d2);
+            clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
+        }
+
+        .container {
+            background-color: #f0f3f5;
+            border-radius: 20px;
+            box-shadow: 8px 8px 16px #ccd5db, 
+                        -8px -8px 16px #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .content {
+            max-width: 800px; 
+            width: 100%;
+            padding: 120px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid black;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(to right, #64b5f6, #1976d2);
+            
+            font-weight: bold;
+            margin-top: 10px; /* Adjust the top margin */
+            
+            -webkit-background-clip: text;
+            color: transparent;
+            font-size: 3rem;
+        }
+        
+        
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 150px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .output {
+            margin-top: 20px;
+        }
+
+        .output-box {
+            padding: 20px;
+            background-color: skyblue;
+            border: 2px solid black;
+            
+            margin-bottom: 20px;
+            border-radius: 12px;
+        }
+        
+
+        .output-box p {
+            margin: 0;
+            padding: 5px 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+      
+
+        <div class="content">
+            <h1>Bitcoin Converter</h1>
+           
+            <form method="post" onsubmit="return validateForm()">
+                {% csrf_token %}
+                <label for="btc_amount">Enter Bitcoin amount:</label>
+                <input type="number" id="btc_amount" name="btc_amount" step="any" placeholder = "enter amt in BTC " required>
+                <button type="submit">Convert</button>
+            </form>
+
+            <div class="output">
+                {% if usd_value %}
+                <div class="output-box">
+                    <p id="usd_output">{{ btc_amount }} BTC = {{ usd_value }} USD</p>
+                </div>
+                <div class="output-box">
+                    <p id="inr_output">{{ btc_amount }} BTC = {{ inr_value }} INR</p>
+                </div>
+                <div class="output-box">
+                    <p id="rub_output">{{ btc_amount }} BTC = {{ rub_value }} RUB</p>
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var output = document.querySelector('.output');
+                        if (output) {
+                            output.remove();
+                        }
+                    },2000); // 1000 milliseconds = 1 second
+                </script>
+                
+                
+                
+                
+                {% endif %}
+            </div>
+        </div>
+    </div>
+                {% comment %} <script>
+                    setTimeout(function() {
+                        var output = document.querySelector('.output');
+                        if (output) {
+                            output.remove();
+                        }
+                    }, 2000); // 1000 milliseconds = 1 second
+                </script> {% endcomment %}
+                
+                
+            </div>
+        </div>
+    </div>
+<script>
+    function validateForm() {
+        var btcAmount = document.getElementById('btc_amount').value.trim();
+
+        if (btcAmount === '') {
+            alert('Please enter a Bitcoin amount');
+            return false;
+        }
+
+        if (isNaN(btcAmount)) {
+            alert('Please enter a valid number for Bitcoin amount');
+            return false;
+        }
+
+        if (btcAmount < 0) {
+            alert('Bitcoin amount must be non-negative');
+            return false;
+        }
+
+        // Optionally, you can add a minimum amount check
+        var minAmount = 0.001; // Example minimum amount
+        if (btcAmount < minAmount) {
+            alert('Bitcoin amount must be at least ' + minAmount);
+            return false;
+        }
+        
+
+        return true;
+    }
+</script>
+
+</html>
